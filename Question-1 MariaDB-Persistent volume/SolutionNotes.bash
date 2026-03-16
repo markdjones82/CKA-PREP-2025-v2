@@ -1,4 +1,4 @@
-# Step 1: create PVC with no storageClass (PV is pre-reset by LabSetUp.bash)
+# Step 1: create PVC. There are 2 ways to do this. (PV is pre-reset by LabSetUp.bash)
 cat <<'EOF' > pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -8,11 +8,12 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  volumeName: mariadb-pv  # bind to specific PV since no storageClass
+  volumeName: mariadb-pv  # bind to specific PV. This is optional but ensures we know which PV is used. If left blank, PVC will bind to any available PV that matches access modes and storage class.
   resources:
     requests:
       storage: 250Mi
-  storageClassName: # Set this to the default storage class name. Some are "standard" some "local-path" etc. Check with "kubectl get storageclass" and look for the one with "(default)" in the name.
+  storageClassName: # Set this to the default storage class name. Some are "standard" some "local-path" etc. Check with "kubectl get storageclass". 
+                    # If you used volumeName above, storageClassName can be left blank and it will bind to the PV by name. If you leave volumeName blank, then storageClassName must match the PV's storageClassName for binding to occur.
 EOF
 kubectl apply -f pvc.yaml
 kubectl get pvc mariadb -n mariadb
