@@ -8,6 +8,7 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
+  volumeName: mariadb-pv  # bind to specific PV since no storageClass
   resources:
     requests:
       storage: 250Mi
