@@ -11,6 +11,7 @@ spec:
   resources:
     requests:
       storage: 250Mi
+  storageClassName: # Set this to the default storage class name. Some are "standard" some "local-path" etc. Check with "kubectl get storageclass" and look for the one with "(default)" in the name.
 EOF
 kubectl apply -f pvc.yaml
 kubectl get pvc mariadb -n mariadb
