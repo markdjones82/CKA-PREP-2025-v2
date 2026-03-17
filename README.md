@@ -7,7 +7,7 @@ Straightforward CKA practice labs derived from the CKA-PREP playlist. Every ques
 - `SolutionNotes.bash` � a step-by-step solution when you need a hint.
 
 ## How to Use
-1. Launch the CKA Killercoda playground or your own cluster.
+1. Launch the CKA Killercoda CKA playground or your own cluster.
 2. Clone this repo inside the environment.
 3. Ensure the script is executable with chmod u+x scripts/run-question.sh
 4. Pick a folder under `Question-*`.
