@@ -7,6 +7,7 @@ helm repo update
 
 # To get the crd value to change, you can run: helm show values argocd/argo-cd --version 7.7.3 | grep -i crd -C 4
 
+helm install argocd argo/argo-cd --version 7.7.3 --set crds.install=false --namespace argocd
 helm template argocd argo/argo-cd --version 7.7.3 --set crds.install=false --namespace argocd > /root/argo-helm.yaml
 cat /root/argo-helm.yaml   # confirm output
 
