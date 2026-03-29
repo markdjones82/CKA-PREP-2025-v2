@@ -1,5 +1,5 @@
 #!/bin/bash
-# Validation script for Question 6 – CRDs (cert-manager)
+# Validation script for Question 6 - CRDs (cert-manager)
 set -uo pipefail
 
 PASS=0
@@ -11,10 +11,10 @@ check() {
   shift
   TOTAL=$((TOTAL + 1))
   if "$@" >/dev/null 2>&1; then
-    echo "  ✅ PASS: $description"
+    echo "  PASS: $description"
     PASS=$((PASS + 1))
   else
-    echo "  ❌ FAIL: $description"
+    echo "  FAIL: $description"
     FAIL=$((FAIL + 1))
   fi
 }
@@ -47,5 +47,5 @@ check "/root/subject.yaml contains subject specification info" \
 
 echo ""
 echo "Results: $PASS/$TOTAL passed, $FAIL failed"
-[[ $FAIL -eq 0 ]] && echo "🎉 All checks passed!" || echo "⚠️  Some checks failed."
+[[ $FAIL -eq 0 ]] && echo "All checks passed!" || echo "Some checks failed."
 exit $FAIL

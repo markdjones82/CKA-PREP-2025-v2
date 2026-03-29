@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-# validate-question.sh — Run validation for a CKA practice question
+# validate-question.sh - Run validation for a CKA practice question
 #
 # Usage:
 #   scripts/validate-question.sh "Question-5 HPA"
@@ -12,14 +12,14 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# ── colour helpers ───────────────────────────────────────────
+# -- colour helpers -------------------------------------------
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No colour
 
-# ── resolve question directory from number or name ───────────
+# -- resolve question directory from number or name -----------
 resolve_question_dir() {
   local input="$1"
 
@@ -43,7 +43,7 @@ resolve_question_dir() {
   return 1
 }
 
-# ── run validation for a single question ─────────────────────
+# -- run validation for a single question ---------------------
 run_validation() {
   local question_dir="$1"
   local dir_name
@@ -51,21 +51,21 @@ run_validation() {
   local validate_script="$question_dir/validate.bash"
 
   if [[ ! -f "$validate_script" ]]; then
-    echo -e "${YELLOW}⚠ SKIP: ${dir_name} — no validate.bash found${NC}"
+    echo -e "${YELLOW}SKIP: ${dir_name} - no validate.bash found${NC}"
     return 2
   fi
 
   echo ""
-  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${CYAN}==========================================================${NC}"
   echo -e "${CYAN} Validating: ${dir_name}${NC}"
-  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${CYAN}==========================================================${NC}"
 
   chmod +x "$validate_script"
   bash "$validate_script"
   return $?
 }
 
-# ── main ─────────────────────────────────────────────────────
+# -- main -----------------------------------------------------
 if [[ $# -lt 1 ]]; then
   echo "Usage: scripts/validate-question.sh <question-number|question-dir|all>"
   echo ""
@@ -83,9 +83,9 @@ FAILED_QUESTIONS=0
 SKIPPED_QUESTIONS=0
 
 if [[ "$INPUT" == "all" ]]; then
-  echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
-  echo -e "${CYAN}║        CKA Practice Questions — Full Validation        ║${NC}"
-  echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
+  echo -e "${CYAN}+==========================================================+${NC}"
+  echo -e "${CYAN}|        CKA Practice Questions - Full Validation        |${NC}"
+  echo -e "${CYAN}+==========================================================+${NC}"
 
   for i in $(seq 1 17); do
     QUESTION_DIR=$(resolve_question_dir "$i")
@@ -106,9 +106,9 @@ if [[ "$INPUT" == "all" ]]; then
   done
 
   echo ""
-  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${CYAN}==========================================================${NC}"
   echo -e "${CYAN} Summary${NC}"
-  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${CYAN}==========================================================${NC}"
   echo -e "  ${GREEN}Passed:  $PASSED_QUESTIONS${NC}"
   echo -e "  ${RED}Failed:  $FAILED_QUESTIONS${NC}"
   echo -e "  ${YELLOW}Skipped: $SKIPPED_QUESTIONS${NC}"

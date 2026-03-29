@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Setting up Kubernetes Gateway API migration lab..."
+echo "Setting up Kubernetes Gateway API migration lab..."
 
 # 1. Install Gateway API CRDs (official source)
-echo "📦 Installing Gateway API CRDs..."
+echo "Installing Gateway API CRDs..."
 kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v1.1.0" >/dev/null
 
 # 2. Deploy a simple nginx web app
@@ -46,7 +46,7 @@ spec:
 EOF
 
 # 4. Create a self-signed TLS certificate and secret
-echo "🔐 Creating TLS certificate..."
+echo "Creating TLS certificate..."
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout tls.key -out tls.crt \
   -subj "/CN=gateway.web.k8s.local/O=web" >/dev/null 2>&1
@@ -91,7 +91,7 @@ spec:
 EOF
 
 echo
-echo "✅ Gateway API lab setup complete!"
+echo "[OK] Gateway API lab setup complete!"
 echo
 echo "Resources created:"
 echo "  - Deployment: web-deployment"
@@ -99,7 +99,7 @@ echo "  - Service: web-service"
 echo "  - Ingress: web"
 echo "  - GatewayClass: nginx-class"
 echo
-echo "🎯 Next steps:"
-echo "  1️⃣  Create a Gateway named web-gateway using hostname gateway.web.k8s.local and nginx-class."
-echo "  2️⃣  Create a HTTPRoute named web-route referencing web-service."
-echo "  3️⃣  Use 'kubectl get gatewayclass,gateway,httproute -A' to verify."
+echo "Next steps:"
+echo "  1.  Create a Gateway named web-gateway using hostname gateway.web.k8s.local and nginx-class."
+echo "  2.  Create a HTTPRoute named web-route referencing web-service."
+echo "  3.  Use 'kubectl get gatewayclass,gateway,httproute -A' to verify."

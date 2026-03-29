@@ -1,5 +1,5 @@
 #!/bin/bash
-# Validation script for Question 9 – Cri-Dockerd
+# Validation script for Question 9 - Cri-Dockerd
 set -uo pipefail
 
 PASS=0
@@ -11,10 +11,10 @@ check() {
   shift
   TOTAL=$((TOTAL + 1))
   if "$@" >/dev/null 2>&1; then
-    echo "  ✅ PASS: $description"
+    echo "  PASS: $description"
     PASS=$((PASS + 1))
   else
-    echo "  ❌ FAIL: $description"
+    echo "  FAIL: $description"
     FAIL=$((FAIL + 1))
   fi
 }
@@ -57,5 +57,5 @@ check "Sysctl settings are persisted in /etc/sysctl.d/" \
 
 echo ""
 echo "Results: $PASS/$TOTAL passed, $FAIL failed"
-[[ $FAIL -eq 0 ]] && echo "🎉 All checks passed!" || echo "⚠️  Some checks failed."
+[[ $FAIL -eq 0 ]] && echo "All checks passed!" || echo "Some checks failed."
 exit $FAIL

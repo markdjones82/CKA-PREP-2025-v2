@@ -20,7 +20,7 @@ EOF
 kubectl apply -f pod.yaml
 kubectl get pods
 
-# Negative test (optional) — should stay Pending
+# Negative test (optional) - should stay Pending
 cat <<'EOF' > podfailure.yaml
 apiVersion: v1
 kind: Pod

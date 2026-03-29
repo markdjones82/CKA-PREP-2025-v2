@@ -1,5 +1,5 @@
 #!/bin/bash
-# Validation script for Question 2 – ArgoCD Helm Template
+# Validation script for Question 2 - ArgoCD Helm Template
 set -uo pipefail
 
 PASS=0
@@ -11,10 +11,10 @@ check() {
   shift
   TOTAL=$((TOTAL + 1))
   if "$@" >/dev/null 2>&1; then
-    echo "  ✅ PASS: $description"
+    echo "  PASS: $description"
     PASS=$((PASS + 1))
   else
-    echo "  ❌ FAIL: $description"
+    echo "  FAIL: $description"
     FAIL=$((FAIL + 1))
   fi
 }
@@ -53,5 +53,5 @@ check "No CRD kind in generated manifest (CRDs skipped)" \
 
 echo ""
 echo "Results: $PASS/$TOTAL passed, $FAIL failed"
-[[ $FAIL -eq 0 ]] && echo "🎉 All checks passed!" || echo "⚠️  Some checks failed."
+[[ $FAIL -eq 0 ]] && echo "All checks passed!" || echo "Some checks failed."
 exit $FAIL

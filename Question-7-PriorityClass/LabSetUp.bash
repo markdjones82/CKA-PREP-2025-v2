@@ -38,4 +38,4 @@ spec:
         command: ["sh", "-c", "while true; do echo 'logging...'; sleep 5; done"]
 EOF
 
-echo "✅ Lab setup complete!"
+echo "[OK] Lab setup complete!"

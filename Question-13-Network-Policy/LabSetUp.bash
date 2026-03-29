@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "🔹 Creating namespaces..."
+echo "Creating namespaces..."
 kubectl create namespace frontend --dry-run=client -o yaml | kubectl apply -f -
 kubectl create namespace backend --dry-run=client -o yaml | kubectl apply -f -
 
-echo "🔹 Deploying backend app..."
+echo "Deploying backend app..."
 kubectl apply -n backend -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -29,10 +29,10 @@ spec:
         - containerPort: 80
 EOF
 
-echo "🔹 Exposing backend as ClusterIP service..."
+echo "Exposing backend as ClusterIP service..."
 kubectl expose deployment backend-deployment -n backend --port=80 --target-port=80 --name=backend-service
 
-echo "🔹 Deploying frontend app..."
+echo "Deploying frontend app..."
 kubectl apply -n frontend -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -55,7 +55,7 @@ spec:
         command: ["sleep", "3600"]
 EOF
 
-echo "🔹 Creating NetworkPolicy files..."
+echo "Creating NetworkPolicy files..."
 mkdir -p /root/network-policies
 cd /root/network-policies
 
@@ -123,4 +123,4 @@ spec:
 EOF
 
 cd /
-echo "✅ Lab setup complete. Three network policy files created in /root/network-policies."
+echo "[OK] Lab setup complete. Three network policy files created in /root/network-policies."
