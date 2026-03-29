@@ -2,11 +2,24 @@
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: scripts/run-question.sh \"Question-XX Topic\"" >&2
+  echo "Usage: scripts/run-question.sh <question-number|question-dir>" >&2
+  echo "Examples:" >&2
+  echo "  scripts/run-question.sh 5" >&2
+  echo "  scripts/run-question.sh Question-5-HPA" >&2
   exit 1
 fi
 
-QUESTION_DIR="$*"
+# If input is just a number, build the directory pattern
+if [[ "$1" =~ ^[0-9]+$ ]]; then
+  QUESTION_DIR=$(find . -maxdepth 1 -type d -name "Question-$1-*" | head -1)
+  if [[ -z "$QUESTION_DIR" ]]; then
+    echo "Error: Question directory for Question-$1 not found" >&2
+    exit 1
+  fi
+else
+  QUESTION_DIR="$*"
+fi
+
 if [[ ! -d "$QUESTION_DIR" ]]; then
   echo "Question directory '$QUESTION_DIR' not found" >&2
   exit 1
