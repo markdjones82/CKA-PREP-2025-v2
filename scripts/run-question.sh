@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 if [[ $# -lt 1 ]]; then
   echo "Usage: scripts/run-question.sh <question-number|question-dir>" >&2
   echo "Examples:" >&2
@@ -9,15 +12,20 @@ if [[ $# -lt 1 ]]; then
   exit 1
 fi
 
-# If input is just a number, build the directory pattern
+# If input is just a number, find the matching Question-N- directory
 if [[ "$1" =~ ^[0-9]+$ ]]; then
-  QUESTION_DIR=$(find . -maxdepth 1 -type d -name "Question-$1-*" | head -1)
+  QUESTION_DIR=$(find "$BASE_DIR" -maxdepth 1 -type d -name "Question-$1-*" | head -1)
   if [[ -z "$QUESTION_DIR" ]]; then
     echo "Error: Question directory for Question-$1 not found" >&2
     exit 1
   fi
 else
-  QUESTION_DIR="$*"
+  # Accept either an absolute path or a name relative to the repo root
+  if [[ -d "$BASE_DIR/$*" ]]; then
+    QUESTION_DIR="$BASE_DIR/$*"
+  else
+    QUESTION_DIR="$*"
+  fi
 fi
 
 if [[ ! -d "$QUESTION_DIR" ]]; then
