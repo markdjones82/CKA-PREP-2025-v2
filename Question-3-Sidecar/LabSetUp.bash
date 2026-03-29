@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Setting up WordPress deployment for sidecar lab in the default namespace..."
+echo "Setting up WordPress deployment for sidecar lab in the default namespace..."
 
 # 1. Create WordPress deployment without log volume
 cat <<EOF | kubectl apply -f -
@@ -44,7 +44,7 @@ spec:
 EOF
 
 echo
-echo "✅ Lab setup complete!"
+echo "[OK] Lab setup complete!"
 echo
 echo "WordPress deployment created in the default namespace."
 echo "You can now edit the deployment to add the sidecar container and shared volume."

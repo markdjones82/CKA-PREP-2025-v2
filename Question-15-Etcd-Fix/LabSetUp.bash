@@ -4,7 +4,7 @@ set -e
 # Step 1: Backup current kube-apiserver manifest
 sudo cp /etc/kubernetes/manifests/kube-apiserver.yaml /root/kube-apiserver.yaml.bak
 
-# Step 2: Simulate migration issue — change etcd client port to peer port 2380
+# Step 2: Simulate migration issue - change etcd client port to peer port 2380
 sudo sed -i 's/:2379/:2380/g' /etc/kubernetes/manifests/kube-apiserver.yaml
 
 # Step 3: Show kube-apiserver pod status/logs

@@ -12,7 +12,7 @@ kubectl edit deployment wordpress
 #     cpu: "400m"
 #     memory: "700Mi"
 # (Values are just an example of dividing the node evenly and keeping some headroom;
-# ensure every container—init and main—uses the exact same requests/limits.)
+# ensure every container-init and main-uses the exact same requests/limits.)
 
 # Step 3: resume replicas
 kubectl scale deployment wordpress --replicas 3

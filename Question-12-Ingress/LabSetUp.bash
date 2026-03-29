@@ -27,4 +27,4 @@ spec:
         - containerPort: 8080
 EOF
 
-echo "✅ Echo server deployment created successfully!"
+echo "[OK] Echo server deployment created successfully!"
