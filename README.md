@@ -1,11 +1,12 @@
 # CKA Practice (Simple Edition)
 
-Straightforward CKA practice labs derived from the CKA-PREP playlist. Every question lives in its own folder with three bash files:
+Straightforward CKA practice labs derived from the CKA-PREP playlist. Every question lives in its own folder with bash files:
 
 - `LabSetUp.bash` — set up the environment for the question.
 - `Questions.bash` — the scenario text plus the YouTube link for the walkthrough.
 - `SolutionNotes.bash` — a step-by-step solution when you need a hint.
 - `validate.bash` — automatic validation checks to confirm your solution is correct.
+- `cleanup.bash` — clean up and remove resources created during the question.
 
 ---
 
@@ -25,6 +26,10 @@ Straightforward CKA practice labs derived from the CKA-PREP playlist. Every ques
 5. Validate your solution:
    ```bash
    scripts/validate-question.sh 5
+   ```
+6. Clean up resources when done:
+   ```bash
+   scripts/cleanup-question.sh 5
    ```
 
 ---
