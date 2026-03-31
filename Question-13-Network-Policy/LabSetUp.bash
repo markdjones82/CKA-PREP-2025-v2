@@ -87,7 +87,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          name: frontend
+          kubernetes.io/metadata.name: frontend
     - ipBlock:
         cidr: 172.16.0.0/16
     ports:
@@ -111,7 +111,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          name: frontend
+          kubernetes.io/metadata.name: frontend
     - podSelector:
         matchLabels:
           app: frontend

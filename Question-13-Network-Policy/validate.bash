@@ -84,4 +84,13 @@ check "Deployment exists in 'backend' namespace" \
 echo ""
 echo "Results: $PASS/$TOTAL passed, $FAIL failed"
 [[ $FAIL -eq 0 ]] && echo "All checks passed!" || echo "Some checks failed."
+
+echo ""
+echo "============================================"
+echo " Manual Validation Command"
+echo "============================================"
+echo "To manually verify connectivity from frontend to backend, run:"
+echo "  kubectl exec -n frontend frontend-deployment-5cfd995957-vdhfw -- curl -v --connect-timeout 5 backend-service.backend.svc.cluster.local:80"
+echo "(Replace the pod name with the actual pod name from: kubectl get pods -n frontend)"
+
 exit $FAIL
