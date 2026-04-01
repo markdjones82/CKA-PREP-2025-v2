@@ -15,7 +15,7 @@ Straightforward CKA practice labs derived from the CKA-PREP playlist. Every ques
 1. Launch the [Killercoda CKA playground](https://killercoda.com/cka) or your own cluster.
 2. Clone this repo inside the environment:
    ```bash
-   git clone https://github.com/vj2201/CKA-PREP-2025-v2.git ~/CKA-PREP-2025-v2
+   git clone https://github.com/markdjones82/CKA-PREP-2025-v2.git ~/CKA-PREP-2025-v2
    cd ~/CKA-PREP-2025-v2
    ```
 3. Run a question setup by number:
