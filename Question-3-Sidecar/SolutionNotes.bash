@@ -4,7 +4,7 @@
 # 1) InitContainer sidecar pattern:
 #    - Use an initContainer with restartPolicy: Always.
 #    - This is the Kubernetes sidecar pattern for jobs and other workloads.
-# 2) Companion sidecar pattern:
+# 2) Co-located container pattern:
 #    - Use a regular container alongside the main app container.
 #    - This also works when the sidecar needs to run for the full pod lifetime.
 # 3) For log tailing, prefer `tail -F` over `tail -f`.
@@ -32,6 +32,45 @@ k edit deployments wordpress
         volumeMounts:
         - name: logs
           mountPath: /var/log
+
+
+# Co-located container version (also valid):
+# Use a regular container instead of an initContainer when the sidecar should run with the pod.
+cat <<'EOF' | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      volumes:
+      - name: logs
+        emptyDir: {}
+      containers:
+      - name: wordpress
+        image: wordpress:php8.2-apache
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: logs
+          mountPath: /var/log
+      - name: log-tailer
+        image: busybox:stable
+        command: ['sh', '-c', 'tail -F /var/log/wordpress.log']
+        volumeMounts:
+        - name: logs
+          mountPath: /var/log
+EOF
 
 
 # Using kubectl patch to add sidecar and shared volume:
