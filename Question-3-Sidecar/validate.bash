@@ -37,10 +37,10 @@ check "Sidecar container named sidecar exists" \
     kubectl get deployment wordpress -o json | python3 -c "
 import json,sys
 d=json.load(sys.stdin)
-spec=d['spec']['template']['spec']
-containers=spec.get('initContainers', []) + spec.get('containers', [])
+spec=d[\"spec\"][\"template\"][\"spec\"]
+containers=spec.get(\"initContainers\", []) + spec.get(\"containers\", [])
 for c in containers:
-    if c.get('name') == 'sidecar' and c.get('image') == 'busybox:stable':
+    if c.get(\"name\") == \"sidecar\" and c.get(\"image\") == \"busybox:stable\":
         sys.exit(0)
 sys.exit(1)
 "
@@ -52,12 +52,12 @@ check "Sidecar runs tail on /var/log/wordpress.log" \
     kubectl get deployment wordpress -o json | python3 -c "
 import json,sys
 d=json.load(sys.stdin)
-spec=d['spec']['template']['spec']
-containers=spec.get('initContainers', []) + spec.get('containers', [])
+spec=d[\"spec\"][\"template\"][\"spec\"]
+containers=spec.get(\"initContainers\", []) + spec.get(\"containers\", [])
 for c in containers:
-    if c.get('name') == 'sidecar':
-        cmd=' '.join(c.get('command', []))
-        if 'wordpress.log' in cmd and ('tail -F' in cmd or 'tail -f' in cmd):
+    if c.get(\"name\") == \"sidecar\":
+        cmd=' '.join(c.get(\"command\", []))
+        if \"wordpress.log\" in cmd and (\"tail -F\" in cmd or \"tail -f\" in cmd):
             sys.exit(0)
 sys.exit(1)
 "
