@@ -32,14 +32,14 @@ check "ConfigMap 'nginx-config' exists in namespace '$NS'" \
 # 2. ConfigMap does NOT contain TLSv1.2
 check "ConfigMap does NOT reference TLSv1.2" \
   bash -c '
-    CM_DATA=$(kubectl get configmap nginx-config -n '"$NS"' -o json 2>/dev/null)
+    CM_DATA=$(kubectl get configmap nginx-config -n '"$NS"' -o jsonpath="{.data.nginx\.conf}" 2>/dev/null)
     ! echo "$CM_DATA" | grep -q "TLSv1.2"
   '
 
 # 3. ConfigMap contains TLSv1.3
 check "ConfigMap references TLSv1.3" \
   bash -c '
-    CM_DATA=$(kubectl get configmap nginx-config -n '"$NS"' -o json 2>/dev/null)
+    CM_DATA=$(kubectl get configmap nginx-config -n '"$NS"' -o jsonpath="{.data.nginx\.conf}" 2>/dev/null)
     echo "$CM_DATA" | grep -q "TLSv1.3"
   '
 
@@ -48,9 +48,9 @@ check "/etc/hosts contains entry for 'ckaquestion.k8s.local'" \
   bash -c 'grep -q "ckaquestion.k8s.local" /etc/hosts'
 
 # 5. /etc/hosts IP matches service IP
-check "/etc/hosts IP matches nginx-service ClusterIP" \
+check "/etc/hosts IP matches nginx-static ClusterIP" \
   bash -c '
-    SVC_IP=$(kubectl get svc nginx-service -n '"$NS"' -o jsonpath="{.spec.clusterIP}" 2>/dev/null)
+    SVC_IP=$(kubectl get svc nginx-static -n '"$NS"' -o jsonpath="{.spec.clusterIP}" 2>/dev/null)
     grep "ckaquestion.k8s.local" /etc/hosts | grep -q "$SVC_IP"
   '
 
@@ -69,7 +69,7 @@ check "nginx-static pods are Running" \
 # 8. TLS 1.2 connection fails (if curl available and service reachable)
 check "TLS 1.2 connection is rejected" \
   bash -c '
-    SVC_IP=$(kubectl get svc nginx-service -n '"$NS"' -o jsonpath="{.spec.clusterIP}" 2>/dev/null)
+    SVC_IP=$(kubectl get svc nginx-static -n '"$NS"' -o jsonpath="{.spec.clusterIP}" 2>/dev/null)
     if [[ -z "$SVC_IP" ]]; then exit 1; fi
     # curl with --tls-max 1.2 should fail (exit code != 0 or HTTP error)
     ! curl -sk --max-time 5 --tls-max 1.2 "https://$SVC_IP" >/dev/null 2>&1
@@ -78,7 +78,7 @@ check "TLS 1.2 connection is rejected" \
 # 9. TLS 1.3 connection succeeds
 check "TLS 1.3 connection succeeds" \
   bash -c '
-    SVC_IP=$(kubectl get svc nginx-service -n '"$NS"' -o jsonpath="{.spec.clusterIP}" 2>/dev/null)
+    SVC_IP=$(kubectl get svc nginx-static -n '"$NS"' -o jsonpath="{.spec.clusterIP}" 2>/dev/null)
     if [[ -z "$SVC_IP" ]]; then exit 1; fi
     curl -sk --max-time 5 --tlsv1.3 "https://$SVC_IP" >/dev/null 2>&1
   '
