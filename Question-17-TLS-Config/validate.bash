@@ -32,14 +32,14 @@ check "ConfigMap 'nginx-config' exists in namespace '$NS'" \
 # 2. ConfigMap does NOT contain TLSv1.2
 check "ConfigMap does NOT reference TLSv1.2" \
   bash -c '
-    CM_DATA=$(kubectl get configmap nginx-config -n '"$NS"' -o json 2>/dev/null)
+    CM_DATA=$(kubectl get configmap nginx-config -n '"$NS"' -o jsonpath="{.data.nginx\.conf}" 2>/dev/null)
     ! echo "$CM_DATA" | grep -q "TLSv1.2"
   '
 
 # 3. ConfigMap contains TLSv1.3
 check "ConfigMap references TLSv1.3" \
   bash -c '
-    CM_DATA=$(kubectl get configmap nginx-config -n '"$NS"' -o json 2>/dev/null)
+    CM_DATA=$(kubectl get configmap nginx-config -n '"$NS"' -o jsonpath="{.data.nginx\.conf}" 2>/dev/null)
     echo "$CM_DATA" | grep -q "TLSv1.3"
   '
 
