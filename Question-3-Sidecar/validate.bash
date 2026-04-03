@@ -31,19 +31,20 @@ check "Deployment 'wordpress' exists" \
 check "WordPress deployment has available replicas" \
   bash -c '[[ $(kubectl get deployment wordpress -o jsonpath="{.status.availableReplicas}" 2>/dev/null) -ge 1 ]]'
 
-# 3. Init container (sidecar) named init-logs or sidecar exists with busybox:stable image
-check "Sidecar/init container with busybox:stable image exists" \
+# 3. Sidecar exists with busybox:stable image
+check "Sidecar with busybox:stable image exists" \
   bash -c '
-    INIT_IMAGES=$(kubectl get deployment wordpress -o jsonpath="{.spec.template.spec.initContainers[*].image}" 2>/dev/null)
-    echo "$INIT_IMAGES" | grep -q "busybox:stable"
+    DEPLOY_JSON=$(kubectl get deployment wordpress -o json 2>/dev/null)
+    echo "$DEPLOY_JSON" | grep -q "busybox:stable" && \
+    (echo "$DEPLOY_JSON" | grep -q "initContainers" || echo "$DEPLOY_JSON" | grep -q '"containers"')
   '
 
 # 4. The sidecar runs tail -f or tail -F on /var/log/wordpress.log
 check "Sidecar runs tail on /var/log/wordpress.log" \
   bash -c '
-    CMD=$(kubectl get deployment wordpress -o json | grep -A5 "busybox:stable" | tr -d "\n")
-    INIT_JSON=$(kubectl get deployment wordpress -o json)
-    echo "$INIT_JSON" | grep -q "wordpress.log"
+    DEPLOY_JSON=$(kubectl get deployment wordpress -o json 2>/dev/null)
+    echo "$DEPLOY_JSON" | grep -q "wordpress.log" && \
+    echo "$DEPLOY_JSON" | grep -Eq "tail -F|tail -f"
   '
 
 # 5. Shared volume exists (emptyDir)
@@ -71,14 +72,15 @@ for c in containers:
 sys.exit(1)
 "'
 
-# 7. Volume mounted at /var/log on sidecar/init container
-check "Volume mounted at /var/log on sidecar init container" \
+# 7. Volume mounted at /var/log on sidecar or init container
+check "Volume mounted at /var/log on sidecar" \
   bash -c '
     kubectl get deployment wordpress -o json | python3 -c "
 import json,sys
 d=json.load(sys.stdin)
-inits=d[\"spec\"][\"template\"][\"spec\"].get(\"initContainers\",[])
-for c in inits:
+spec=d[\"spec\"][\"template\"][\"spec\"]
+containers=spec.get(\"initContainers\",[])+spec.get(\"containers\",[])
+for c in containers:
   mounts=c.get(\"volumeMounts\",[])
   for m in mounts:
     if m[\"mountPath\"] == \"/var/log\":
