@@ -49,18 +49,11 @@ sys.exit(1)
 # 4. The sidecar runs tail -f or tail -F on /var/log/wordpress.log
 check "Sidecar runs tail on /var/log/wordpress.log" \
   bash -c '
-    kubectl get deployment wordpress -o json | python3 -c "
-import json,sys
-d=json.load(sys.stdin)
-spec=d[\"spec\"][\"template\"][\"spec\"]
-containers=spec.get(\"initContainers\", []) + spec.get(\"containers\", [])
-for c in containers:
-    if c.get(\"name\") == \"sidecar\":
-        cmd=' '.join(c.get(\"command\", []))
-        if \"wordpress.log\" in cmd and (\"tail -F\" in cmd or \"tail -f\" in cmd):
-            sys.exit(0)
-sys.exit(1)
-"
+    CMD=$(kubectl get deployment wordpress -o jsonpath="{.spec.template.spec.containers[?(@.name=='sidecar')].command[*]}" 2>/dev/null)
+    if [[ -z "$CMD" ]]; then
+      CMD=$(kubectl get deployment wordpress -o jsonpath="{.spec.template.spec.initContainers[?(@.name=='sidecar')].command[*]}" 2>/dev/null)
+    fi
+    [[ "$CMD" == *"wordpress.log"* && ( "$CMD" == *"tail -F"* || "$CMD" == *"tail -f"* ) ]]
   '
 
 # 5. Shared volume exists (emptyDir)
