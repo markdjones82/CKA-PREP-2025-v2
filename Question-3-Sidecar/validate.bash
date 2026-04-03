@@ -31,20 +31,36 @@ check "Deployment 'wordpress' exists" \
 check "WordPress deployment has available replicas" \
   bash -c '[[ $(kubectl get deployment wordpress -o jsonpath="{.status.availableReplicas}" 2>/dev/null) -ge 1 ]]'
 
-# 3. Sidecar exists with busybox:stable image
-check "Sidecar with busybox:stable image exists" \
+# 3. Sidecar container named sidecar exists with busybox:stable image
+check "Sidecar container named sidecar exists" \
   bash -c '
-    DEPLOY_JSON=$(kubectl get deployment wordpress -o json 2>/dev/null)
-    echo "$DEPLOY_JSON" | grep -q "busybox:stable" && \
-    (echo "$DEPLOY_JSON" | grep -q "initContainers" || echo "$DEPLOY_JSON" | grep -q '"containers"')
+    kubectl get deployment wordpress -o json | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+spec=d['spec']['template']['spec']
+containers=spec.get('initContainers', []) + spec.get('containers', [])
+for c in containers:
+    if c.get('name') == 'sidecar' and c.get('image') == 'busybox:stable':
+        sys.exit(0)
+sys.exit(1)
+"
   '
 
 # 4. The sidecar runs tail -f or tail -F on /var/log/wordpress.log
 check "Sidecar runs tail on /var/log/wordpress.log" \
   bash -c '
-    DEPLOY_JSON=$(kubectl get deployment wordpress -o json 2>/dev/null)
-    echo "$DEPLOY_JSON" | grep -q "wordpress.log" && \
-    echo "$DEPLOY_JSON" | grep -Eq "tail -F|tail -f"
+    kubectl get deployment wordpress -o json | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+spec=d['spec']['template']['spec']
+containers=spec.get('initContainers', []) + spec.get('containers', [])
+for c in containers:
+    if c.get('name') == 'sidecar':
+        cmd=' '.join(c.get('command', []))
+        if 'wordpress.log' in cmd and ('tail -F' in cmd or 'tail -f' in cmd):
+            sys.exit(0)
+sys.exit(1)
+"
   '
 
 # 5. Shared volume exists (emptyDir)
@@ -88,7 +104,15 @@ for c in containers:
 sys.exit(1)
 "'
 
-# 8. Pod is running
+# 8. WordPress log line exists in the shared volume
+check "WordPress log line is written to shared volume" \
+  bash -c '
+    POD=$(kubectl get pods -l app=wordpress -o jsonpath="{.items[0].metadata.name}" 2>/dev/null)
+    [[ -n "$POD" ]] || exit 1
+    kubectl exec "$POD" -c wordpress -- sh -c "grep -q \"WordPress is running...\" /var/log/wordpress.log"
+  '
+
+# 9. Pod is running
 check "WordPress pod is Running" \
   bash -c 'kubectl get pods -l app=wordpress -o jsonpath="{.items[0].status.phase}" | grep -q Running'
 
