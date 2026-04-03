@@ -100,3 +100,4 @@ This opens VSCodium in the current directory, allowing you to browse and edit al
 | 15 | Etcd Fix | https://youtu.be/IL448T6r8H4 |
 | 16 | NodePort Service | — |
 | 17 | TLS Config | — |
+| 18 | kubectl patch — Resource Limits | — |
