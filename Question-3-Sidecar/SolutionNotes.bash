@@ -1,26 +1,37 @@
-# Solution Link for docmentation: https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/#jobs-with-sidecar-containers
+# Solution Link for documentation: https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/#jobs-with-sidecar-containers
 
-# Proper Solution uses Sidecar with init container. 
-# You can  edit the deployment to add a sidecar and shared volume and add the volume and mounts.
+# Sidecar notes:
+# 1) InitContainer sidecar pattern:
+#    - Use an initContainer with restartPolicy: Always.
+#    - This is the Kubernetes sidecar pattern for jobs and other workloads.
+# 2) Companion sidecar pattern:
+#    - Use a regular container alongside the main app container.
+#    - This also works when the sidecar needs to run for the full pod lifetime.
+# 3) For log tailing, prefer `tail -F` over `tail -f`.
+#    - `-F` follows log files across rotation and re-creation.
+#    - `-f` can miss logs after rotation.
+
+# Proper solution can use either sidecar style, depending on the task.
+# You can edit the deployment to add a sidecar and shared volume and add the volume and mounts.
 k edit deployments wordpress
-  # template:
-  #   metadata:
-  #     labels:
-  #       app: wordpress
-  #   spec:
-  #     volumes:
-  #     - name: logs
-  #       emptyDir: {}
-  #       volumeMounts:
-  #       - name: logs
-  #         mountPath: /var/log
-  #     initContainers:
-  #     - name: init-logs
-  #       image: busybox:stable
-  #       command: ['sh', '-c', 'tail -F /var/log/wordpress.log']
-  #       volumeMounts:
-  #       - name: logs
-  #         mountPath: /var/log
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      volumes:
+      - name: logs
+        emptyDir: {}
+        volumeMounts:
+        - name: logs
+          mountPath: /var/log
+      initContainers:
+      - name: init-logs
+        image: busybox:stable
+        command: ['sh', '-c', 'tail -F /var/log/wordpress.log']
+        volumeMounts:
+        - name: logs
+          mountPath: /var/log
 
 
 # Using kubectl patch to add sidecar and shared volume:
