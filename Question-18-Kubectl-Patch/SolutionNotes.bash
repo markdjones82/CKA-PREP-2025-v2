@@ -21,3 +21,32 @@ kubectl get deployment resource-app -n patch-ns \
 
 # Or check with describe:
 kubectl describe deployment resource-app -n patch-ns | grep -A 5 "Limits:"
+
+# ==============================================================================
+# Alternative Approach: Using kubectl patch with a YAML file
+# ==============================================================================
+#
+# This approach is useful when you want to prepare the patch in advance or
+# make the changes more explicit.
+#
+# Step 1: Get the current deployment YAML
+kubectl get deployment resource-app -n patch-ns -o yaml > deployment.yaml
+
+# Step 2: Create a patch YAML file with only the fields you want to change
+cat > patch.yaml <<'EOF'
+spec:
+  template:
+    spec:
+      containers:
+      - name: nginx
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+EOF
+
+# Step 3: Apply the strategic merge patch from the file
+kubectl patch deployment resource-app -n patch-ns --patch-file=patch.yaml
+
+# Verify the changes:
+kubectl get deployment resource-app -n patch-ns -o jsonpath='{.spec.template.spec.containers[0].resources}' | python3 -m json.tool

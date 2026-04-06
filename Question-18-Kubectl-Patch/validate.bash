@@ -79,6 +79,20 @@ check "Deployment pods are Running" \
     kubectl get pods -n '"$NS"' --no-headers 2>/dev/null | grep -q Running
   '
 
+# 9. Verify kubectl patch was used (check bash history)
+check "kubectl patch command was used (not edit)" \
+  bash -c '
+    # Check if patch command appears in history
+    (history 2>/dev/null || cat ~/.bash_history 2>/dev/null) | grep -q "kubectl patch"
+  '
+
+# 10. Verify kubectl edit was NOT used
+check "kubectl edit command was NOT used" \
+  bash -c '
+    # Check that edit command was not used for this resource
+    ! (history 2>/dev/null || cat ~/.bash_history 2>/dev/null) | grep -E "kubectl edit.*resource-app" 2>/dev/null
+  '
+
 echo ""
 echo "Results: $PASS/$TOTAL passed, $FAIL failed"
 [[ $FAIL -eq 0 ]] && echo "All checks passed!" || echo "Some checks failed."
