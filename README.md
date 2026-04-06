@@ -2,6 +2,8 @@
 
 Straightforward CKA practice labs derived from the CKA-PREP playlist. Every question lives in its own folder with bash files:
 
+> **Note:** This is a living repo and may still contain bugs or rough edges. If you spot an issue—especially in lab setup or validation scripts—please open an issue so it can be fixed.
+
 - `LabSetUp.bash` — set up the environment for the question.
 - `Questions.bash` — the scenario text plus the YouTube link for the walkthrough.
 - `SolutionNotes.bash` — a step-by-step solution when you need a hint.
