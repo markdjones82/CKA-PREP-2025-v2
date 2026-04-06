@@ -24,6 +24,38 @@ echo " Validating Question 18: kubectl patch"
 echo "======================================"
 
 NS="patch-ns"
+HISTORY_FILE="${HISTFILE:-$HOME/.bash_history}"
+
+find_history_files() {
+  local files=()
+
+  [[ -f "$HISTORY_FILE" ]] && files+=("$HISTORY_FILE")
+  [[ -f "/root/.bash_history" ]] && files+=("/root/.bash_history")
+
+  if [[ -n "${SUDO_USER:-}" && -f "/home/${SUDO_USER}/.bash_history" ]]; then
+    files+=("/home/${SUDO_USER}/.bash_history")
+  fi
+
+  if [[ ${#files[@]} -eq 0 ]]; then
+    return 1
+  fi
+
+  printf '%s\n' "${files[@]}" | sort -u
+}
+
+history_contains() {
+  local pattern="$1"
+  local history_files
+
+  history_files=$(find_history_files) || return 1
+  grep -qiE "$pattern" $history_files
+}
+
+history_not_contains() {
+  local pattern="$1"
+
+  ! history_contains "$pattern"
+}
 
 # 1. Namespace patch-ns exists
 check "Namespace 'patch-ns' exists" \
@@ -79,19 +111,15 @@ check "Deployment pods are Running" \
     kubectl get pods -n '"$NS"' --no-headers 2>/dev/null | grep -q Running
   '
 
-# 9. Verify kubectl patch was used (check bash history)
-check "kubectl patch command was used (not edit)" \
-  bash -c '
-    # Check if patch command appears in history
-    (history 2>/dev/null || cat ~/.bash_history 2>/dev/null) | grep -q "kubectl patch"
-  '
+# 9. Verify patch command was used (kubectl or k)
+# Note: this checks the persisted history file. The user's interactive shell must
+# have already written commands to that file.
+check "patch command was used (kubectl or k)" \
+  history_contains '(^|[[:space:]])(kubectl|k)[[:space:]]+patch([[:space:]]|$)'
 
-# 10. Verify kubectl edit was NOT used
-check "kubectl edit command was NOT used" \
-  bash -c '
-    # Check that edit command was not used for this resource
-    ! (history 2>/dev/null || cat ~/.bash_history 2>/dev/null) | grep -E "kubectl edit.*resource-app" 2>/dev/null
-  '
+# 10. Verify kubectl/k edit was NOT used for resource-app
+check "edit command was NOT used for resource-app" \
+  history_not_contains '(^|[[:space:]])(kubectl|k)[[:space:]]+edit([[:space:]].*)?resource-app([[:space:]]|$)'
 
 echo ""
 echo "Results: $PASS/$TOTAL passed, $FAIL failed"
