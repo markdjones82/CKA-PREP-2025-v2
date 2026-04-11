@@ -4,7 +4,8 @@
 kubectl get nodes
 # The node should show NotReady
 
-# Step 2: SSH to the broken node and check kubelet
+# Step 2: SSH to node01 and check kubelet
+ssh node01
 systemctl status kubelet
 # Will show the service is failing or restarting
 
