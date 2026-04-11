@@ -7,13 +7,14 @@ kubectl get nodes
 # Step 2: Inspect the API server certificate
 sudo openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout
 # Look for:
-#   - Subject: CN = bad-apiserver  (wrong CN)
-#   - Not After: already expired
+#   - The certificate is expired
+#   - The Subject Alternative Name list should still match the apiserver
 
 # Step 3: Check which certificates kubeadm manages
 sudo kubeadm certs check-expiration
 
 # Step 4: Renew the API server certificate
+# This lab is intentionally set up so the normal kubeadm renewal flow works.
 sudo kubeadm certs renew apiserver
 
 # Step 5: Restart the kube-apiserver by moving the manifest out and back
@@ -28,7 +29,7 @@ kubectl get nodes
 kubectl get pods -n kube-system
 
 # Manual verification commands:
-# Confirm the new cert has a valid expiry and correct CN
+# Confirm the new cert has a valid expiry and expected subject
 sudo openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout | grep -E "Subject:|Not After"
 
 # Confirm API server is using the new cert

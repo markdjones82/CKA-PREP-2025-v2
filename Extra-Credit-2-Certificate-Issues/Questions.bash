@@ -1,7 +1,6 @@
 # Question: Expired / Invalid Certificates
 # The cluster was working fine yesterday, but today kubectl commands are returning
-# TLS handshake errors. Someone rotated the API server serving certificate but
-# used a wrong CN (Common Name) and the certificate has already expired.
+# TLS handshake errors because the API server serving certificate has expired.
 
 # Task:
 # 1. Identify which certificate is causing the issue
