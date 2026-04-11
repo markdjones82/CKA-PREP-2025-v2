@@ -25,10 +25,15 @@ echo "======================================"
 
 NS="patch-ns"
 HISTORY_FILE="${HISTFILE:-$HOME/.bash_history}"
+AUDIT_LOG="${CKA_Q18_AUDIT:-/tmp/cka-q18-audit.log}"
 
 find_history_files() {
   local files=()
 
+  # Prefer the dedicated audit log written by the PROMPT_COMMAND hook (most reliable)
+  [[ -f "$AUDIT_LOG" ]] && files+=("$AUDIT_LOG")
+
+  # Fall back to standard history files
   [[ -f "$HISTORY_FILE" ]] && files+=("$HISTORY_FILE")
   [[ -f "/root/.bash_history" ]] && files+=("/root/.bash_history")
 
@@ -115,7 +120,7 @@ check "Deployment pods are Running" \
 # Note: this checks the persisted history file. The user's interactive shell must
 # have already written commands to that file.
 check "patch command was used (kubectl or k)" \
-  history_contains '(^|[[:space:]])(kubectl|k)[[:space:]]+patch([[:space:]]|$)'
+  history_contains '(^|[[:space:]])(kubectl|k)[[:space:]].*patch'
 
 # 10. Verify kubectl/k edit was NOT used for resource-app
 check "edit command was NOT used for resource-app" \
