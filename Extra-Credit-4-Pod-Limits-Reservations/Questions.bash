@@ -16,8 +16,6 @@
 # 5. Verify all pods are running with the correct resource settings
 
 # Hints:
-# - kubectl set resources can update requests/limits on a deployment
-# - LimitRange applies defaults to new pods that do not specify resources
-# - ResourceQuota limits the total resources consumed in a namespace
-# - Docs: https://kubernetes.io/docs/concepts/policy/limit-range/
-# - Docs: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+# - Update the deployment resource settings for the container
+# - Create namespace policies for defaults and quotas
+# - Verify the rollout and resulting pod resources

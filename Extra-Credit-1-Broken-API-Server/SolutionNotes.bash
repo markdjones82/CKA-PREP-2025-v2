@@ -6,7 +6,7 @@ kubectl get nodes
 
 # Step 2: Use crictl to find the kube-apiserver container and check logs
 sudo crictl ps -a | grep kube-apiserver
-sudo crictl logs <container-id> | tail -20
+# sudo crictl logs <container-id> | tail -20
 # Look for errors about invalid service-cluster-ip-range
 
 # Step 3: Inspect the static pod manifest

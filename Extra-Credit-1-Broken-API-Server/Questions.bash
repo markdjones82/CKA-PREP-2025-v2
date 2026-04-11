@@ -11,5 +11,5 @@
 
 # Hints:
 # - Static pod manifests live in /etc/kubernetes/manifests/
-# - Use crictl to inspect container logs when kubectl is unavailable
-# - The default service CIDR is typically 10.96.0.0/12
+# - Inspect control plane logs and pod manifests when kubectl is unavailable
+# - The correct service CIDR may be given in the task or inferred from cluster files

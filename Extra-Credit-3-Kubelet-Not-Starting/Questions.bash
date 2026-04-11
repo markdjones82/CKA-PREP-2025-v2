@@ -10,8 +10,6 @@
 # 4. Restart the kubelet and verify the node is Ready
 
 # Hints:
-# - Check node status: kubectl get nodes
-# - Check kubelet status: systemctl status kubelet
-# - Check kubelet logs: journalctl -u kubelet -n 50
-# - Kubelet config can be in /var/lib/kubelet/config.yaml or /etc/default/kubelet
-# - The correct containerd socket is: unix:///run/containerd/containerd.sock
+# - Check node readiness and kubelet service health
+# - Review kubelet logs for container runtime connection issues
+# - Inspect kubelet config files for the runtime endpoint setting
