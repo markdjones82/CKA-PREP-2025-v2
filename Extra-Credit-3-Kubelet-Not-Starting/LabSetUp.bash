@@ -5,17 +5,13 @@ echo "Setting up Extra Credit 3: Kubelet Not Starting..."
 
 BAD_NODE="node01"
 
-# Backup kubelet config on the broken node
-ssh "$BAD_NODE" "sudo cp /var/lib/kubelet/config.yaml /root/kubelet-config.yaml.bak 2>/dev/null || true"
+# Backup the kubeadm-flags.env file on the broken node
+# This file is present on all kubeadm-managed nodes and is sourced by the kubelet drop-in
+ssh "$BAD_NODE" "sudo cp /var/lib/kubelet/kubeadm-flags.env /root/kubeadm-flags.env.bak"
 
-# Break the kubelet by pointing to a wrong container runtime socket
-# Check if the kubelet drop-in exists and modify it
-KUBELET_DROPIN="/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
-ssh "$BAD_NODE" "if [[ -f '$KUBELET_DROPIN' ]]; then sudo cp '$KUBELET_DROPIN' /root/10-kubeadm.conf.bak; fi"
-
-# Add a bad --container-runtime-endpoint flag
-ssh "$BAD_NODE" "sudo mkdir -p /etc/default"
-ssh "$BAD_NODE" "echo 'KUBELET_EXTRA_ARGS=--container-runtime-endpoint=unix:///run/containerd/bad-socket.sock' | sudo tee /etc/default/kubelet > /dev/null"
+# Break the kubelet by appending a wrong container runtime endpoint into kubeadm-flags.env
+# sed appends the bad flag just before the closing quote of KUBELET_KUBEADM_ARGS
+ssh "$BAD_NODE" "sudo sed -i 's|\"$| --container-runtime-endpoint=unix:///run/containerd/bad-socket.sock\"|' /var/lib/kubelet/kubeadm-flags.env"
 
 # Restart kubelet so it picks up the bad config
 ssh "$BAD_NODE" "sudo systemctl daemon-reload"

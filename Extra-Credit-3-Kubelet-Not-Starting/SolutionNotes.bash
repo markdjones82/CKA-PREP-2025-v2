@@ -14,14 +14,22 @@ journalctl -u kubelet -n 50
 # Look for errors about container runtime socket connection refused
 
 # Step 4: Find what is wrong
-# Check the kubelet extra args
-cat /etc/default/kubelet
-# You will see: KUBELET_EXTRA_ARGS=--container-runtime-endpoint=unix:///run/containerd/bad-socket.sock
+# On kubeadm nodes, the kubelet reads runtime args from /var/lib/kubelet/kubeadm-flags.env
+# This is the universal kubeadm location, present on any distro
+# Confirm this by checking which files are sourced:
+systemctl cat kubelet
+# Look for: EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+
+# Then inspect the file:
+cat /var/lib/kubelet/kubeadm-flags.env
+# You will see --container-runtime-endpoint=unix:///run/containerd/bad-socket.sock appended
 
 # Step 5: Fix the container runtime endpoint
-echo 'KUBELET_EXTRA_ARGS=' | sudo tee /etc/default/kubelet > /dev/null
-# Or set it to the correct socket:
-# echo 'KUBELET_EXTRA_ARGS=--container-runtime-endpoint=unix:///run/containerd/containerd.sock' | sudo tee /etc/default/kubelet > /dev/null
+# Remove the bad flag by restoring the correct runtime endpoint
+# Edit the file and remove the bad --container-runtime-endpoint entry, leaving the rest intact
+sudo vi /var/lib/kubelet/kubeadm-flags.env
+# Or use sed to remove just the bad flag:
+sudo sed -i 's| --container-runtime-endpoint=unix:///run/containerd/bad-socket.sock||g' /var/lib/kubelet/kubeadm-flags.env
 
 # Step 6: Restart kubelet
 sudo systemctl daemon-reload

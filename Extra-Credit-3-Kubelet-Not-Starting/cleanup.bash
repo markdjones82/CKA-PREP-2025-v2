@@ -3,11 +3,12 @@
 set -uo pipefail
 echo "Cleaning up Extra Credit 3: Kubelet Not Starting..."
 
-# Remove the bad kubelet extra args
-ssh node01 "echo 'KUBELET_EXTRA_ARGS=' | sudo tee /etc/default/kubelet > /dev/null"
-
-# Restore backup if it exists
-ssh node01 "if [[ -f /root/10-kubeadm.conf.bak ]]; then sudo cp /root/10-kubeadm.conf.bak /etc/systemd/system/kubelet.service.d/10-kubeadm.conf; fi"
+# Restore the original kubeadm-flags.env from the backup taken during setup
+if ssh node01 "test -f /root/kubeadm-flags.env.bak"; then
+  ssh node01 "sudo cp /root/kubeadm-flags.env.bak /var/lib/kubelet/kubeadm-flags.env"
+else
+  echo "[WARN] No kubeadm-flags.env backup found on node01. Kubelet may have been manually fixed already."
+fi
 
 ssh node01 "sudo systemctl daemon-reload"
 ssh node01 "sudo systemctl restart kubelet"

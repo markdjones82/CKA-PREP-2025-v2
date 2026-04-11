@@ -23,18 +23,18 @@ echo "======================================"
 echo " Validating Extra Credit 3: Kubelet Not Starting"
 echo "======================================"
 
-# 1. Kubelet service is active
-check "Kubelet service is active" \
-  bash -c 'systemctl is-active kubelet'
+# 1. Kubelet service is active on node01
+check "Kubelet service is active on node01" \
+  bash -c 'ssh node01 "systemctl is-active kubelet"'
 
-# 2. Kubelet is not using bad socket
-check "Kubelet is not configured with bad-socket.sock" \
-  bash -c '! grep -q "bad-socket.sock" /etc/default/kubelet 2>/dev/null'
+# 2. Kubelet is not using bad socket on node01
+check "kubeadm-flags.env does not contain bad-socket.sock" \
+  bash -c '! ssh node01 "grep -q bad-socket.sock /var/lib/kubelet/kubeadm-flags.env 2>/dev/null"'
 
-# 3. Node is Ready
-check "Node is in Ready state" \
+# 3. node01 is Ready
+check "node01 is in Ready state" \
   bash -c '
-    kubectl get nodes --no-headers 2>/dev/null | grep -v NotReady | grep -q Ready
+    kubectl get node node01 --no-headers 2>/dev/null | grep -v NotReady | grep -q Ready
   '
 
 # 4. kubectl can communicate with the cluster
