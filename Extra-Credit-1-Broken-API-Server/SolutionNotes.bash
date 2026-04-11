@@ -13,6 +13,13 @@ sudo crictl logs <container-id> | tail -20
 sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep service-cluster-ip-range
 # You will see: --service-cluster-ip-range=999.999.0.0/16
 
+# Note: the question may or may not tell you the correct service CIDR.
+# If it does not, you can often infer it from the API server certificate.
+# The serving cert usually includes the kubernetes service IP in its SANs.
+sudo openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout | grep -A1 'Subject Alternative Name'
+# Look for an IP like 10.96.0.1 in the SAN list.
+# That is usually the kubernetes default service IP, which implies a CIDR such as 10.96.0.0/12.
+
 # Step 4: Fix the manifest with the correct CIDR
 sudo sed -i 's|--service-cluster-ip-range=999.999.0.0/16|--service-cluster-ip-range=10.96.0.0/12|' /etc/kubernetes/manifests/kube-apiserver.yaml
 

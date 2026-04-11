@@ -1,5 +1,7 @@
 #!/bin/bash
-set -e
+set -Eeuo pipefail
+
+trap 'echo "[ERROR] Lab setup failed at line $LINENO: $BASH_COMMAND" >&2' ERR
 
 echo "Setting up Extra Credit 2: Certificate Issues..."
 
