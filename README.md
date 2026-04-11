@@ -2,6 +2,8 @@
 
 Straightforward CKA practice labs derived from the CKA-PREP playlist. Every question lives in its own folder with bash files:
 
+> **Note:** Questions 1-18 are designed to feel very similar to real CKA exam scenarios, but they are not exact exam questions.
+
 > **Note:** This is a living repo and may still contain bugs or rough edges. If you spot an issue—especially in lab setup or validation scripts—please open an issue so it can be fixed.
 
 - `LabSetUp.bash` — set up the environment for the question.
@@ -11,6 +13,8 @@ Straightforward CKA practice labs derived from the CKA-PREP playlist. Every ques
 - `cleanup.bash` — clean up and remove resources created during the question.
 
 The repo also includes `Extra-Credit-*` labs for harder troubleshooting and cluster-repair scenarios.
+
+> **Note:** These extra-credit labs have not been known to appear on the CKA exam. They are included to build more hands-on troubleshooting familiarity in case exam patterns change.
 
 ---
 

@@ -24,4 +24,7 @@ ssh "$BAD_NODE" "sudo systemctl restart kubelet || true"
 echo "Waiting for kubelet to fail..."
 sleep 10
 
+echo "Waiting 60 seconds for the node status to update to NotReady..."
+sleep 60
+
 echo "[OK] Lab setup complete!"
