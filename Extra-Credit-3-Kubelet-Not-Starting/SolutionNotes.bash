@@ -9,28 +9,33 @@ ssh node01
 systemctl status kubelet
 # Will show the service is failing or restarting
 
-# Step 3: Check kubelet logs
+# Step 3: Check kubelet logs for the exact error
 journalctl -u kubelet -n 50
-# Look for errors about container runtime socket connection refused
+# Look specifically for lines containing the socket path or CRI connection errors:
+journalctl -u kubelet -n 100 | grep -i "container runtime\|CRI\|socket\|dial\|no such file"
+# You will see an error similar to:
+#   dial unix /var/run/containerd/container.sock: connect: no such file or directory
+# or:
+#   validate service connection: CRI v1 runtime API is not implemented for endpoint
+# This tells you exactly which socket path kubelet is trying to connect to
 
 # Step 4: Find what is wrong
-# On kubeadm nodes, the kubelet reads runtime args from /var/lib/kubelet/kubeadm-flags.env
-# This is the universal kubeadm location, present on any distro
-# Confirm this by checking which files are sourced:
+# On this kubeadm cluster the runtime endpoint flag is set in kubeadm-flags.env
+# Confirm this by checking the kubelet systemd unit:
 systemctl cat kubelet
 # Look for: EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
 
 # Then inspect the file:
 cat /var/lib/kubelet/kubeadm-flags.env
-# You will see a typo: --container-runtime-endpoint=unix:///run/containerd/container.sock
-# The correct path is: unix:///run/containerd/containerd.sock (note the missing 'd')
+# You will see a typo: unix:///var/run/containerd/container.sock
+# The correct path is: unix:///var/run/containerd/containerd.sock (note the missing 'd')
+
+# To confirm the correct socket path, check a working node:
+# crictl info | grep runtimeEndpoint
+# Or check /etc/crictl.yaml
 
 # Step 5: Fix the container runtime endpoint
-# Remove the bad flag by restoring the correct runtime endpoint
-# Edit the file and remove the bad --container-runtime-endpoint entry, leaving the rest intact
-sudo vi /var/lib/kubelet/kubeadm-flags.env
-# Or use sed to remove just the bad flag:
-sudo sed -i 's| --container-runtime-endpoint=unix:///run/containerd/container.sock||g' /var/lib/kubelet/kubeadm-flags.env
+sudo sed -i 's|unix:///var/run/containerd/container.sock|unix:///var/run/containerd/containerd.sock|g' /var/lib/kubelet/kubeadm-flags.env
 
 # Step 6: Restart kubelet
 sudo systemctl daemon-reload

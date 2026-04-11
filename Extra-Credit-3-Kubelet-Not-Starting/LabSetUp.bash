@@ -1,27 +1,32 @@
 #!/bin/bash
 set -e
 
-echo "Setting up Extra Credit 3: Kubelet Not Starting..."
+echo "Setting up Extra Credit 3: Kubelet Not Starting... This lab takes about 2 minutes to setup."
 
 BAD_NODE="node01"
 
-# Backup the kubeadm-flags.env file on the broken node
-# This file is present on all kubeadm-managed nodes and is sourced by the kubelet drop-in
-ssh "$BAD_NODE" "sudo cp /var/lib/kubelet/kubeadm-flags.env /root/kubeadm-flags.env.bak"
+# Write a script to node01 and execute it there to avoid SSH quoting issues
+# The coworker was trying to migrate the container runtime and introduced a typo
+# in the runtime endpoint flag inside kubeadm-flags.env
+cat > /tmp/break-kubelet.sh << 'EOF'
+#!/bin/bash
+cp /var/lib/kubelet/kubeadm-flags.env /root/kubeadm-flags.env.bak
+sed -i 's|unix:///var/run/containerd/containerd.sock|unix:///var/run/containerd/container.sock|g' /var/lib/kubelet/kubeadm-flags.env
+systemctl daemon-reload
+systemctl restart kubelet || true
+EOF
 
-# Break the kubelet by appending a wrong container runtime endpoint into kubeadm-flags.env
-# sed appends the bad flag just before the closing quote of KUBELET_KUBEADM_ARGS
-# Simulate a realistic typo: 'container.sock' instead of 'containerd.sock'
-ssh "$BAD_NODE" "sudo sed -i 's|\"$| --container-runtime-endpoint=unix:///run/containerd/container.sock\"|' /var/lib/kubelet/kubeadm-flags.env"
+scp /tmp/break-kubelet.sh ${BAD_NODE}:/tmp/break-kubelet.sh
+ssh "$BAD_NODE" "sudo bash /tmp/break-kubelet.sh"
 
-# Restart kubelet so it picks up the bad config
-ssh "$BAD_NODE" "sudo systemctl daemon-reload"
-ssh "$BAD_NODE" "sudo systemctl restart kubelet || true"
-
-echo "Waiting for kubelet to fail..."
-sleep 10
-
-echo "Waiting 60 seconds for the node status to update to NotReady..."
-sleep 60
+echo "Waiting for node01 to show NotReady..."
+while true; do
+  STATUS=$(kubectl get node node01 --no-headers 2>/dev/null | awk '{print $2}')
+  if [[ "$STATUS" == "NotReady" ]]; then
+    echo "node01 is NotReady."
+    break
+  fi
+  sleep 2
+done
 
 echo "[OK] Lab setup complete!"

@@ -29,7 +29,7 @@ check "Kubelet service is active on node01" \
 
 # 2. Kubelet is not using bad socket on node01
 check "kubeadm-flags.env does not contain the typo container.sock" \
-  bash -c '! ssh node01 "grep -q container-runtime-endpoint=unix:///run/containerd/container.sock /var/lib/kubelet/kubeadm-flags.env 2>/dev/null"'
+  bash -c '! ssh node01 "grep -q unix:///var/run/containerd/container.sock /var/lib/kubelet/kubeadm-flags.env 2>/dev/null"'
 
 # 3. node01 is Ready
 check "node01 is in Ready state" \
