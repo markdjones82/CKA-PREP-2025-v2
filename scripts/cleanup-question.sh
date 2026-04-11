@@ -18,6 +18,10 @@ resolve_question_dir() {
     echo "$BASE_DIR/$input"
     return 0
   fi
+  if [[ -d "$input" ]]; then
+    echo "$input"
+    return 0
+  fi
   if [[ "$input" =~ ^[0-9]+$ ]]; then
     local match
     match=$(find "$BASE_DIR" -maxdepth 1 -type d -name "Question-${input}-*" | head -1)
@@ -26,8 +30,20 @@ resolve_question_dir() {
       return 0
     fi
   fi
+  if [[ "$input" =~ ^([Ee][Xx][Tt][Rr][Aa]([[:space:]-]*[Cc][Rr][Ee][Dd][Ii][Tt])?|[Ee][Cc])[[:space:]-]*([0-9]+)$ ]]; then
+    local extra_match
+    extra_match=$(find "$BASE_DIR" -maxdepth 1 -type d -name "Extra-Credit-${BASH_REMATCH[3]}-*" | head -1)
+    if [[ -n "$extra_match" ]]; then
+      echo "$extra_match"
+      return 0
+    fi
+  fi
   echo ""
   return 1
+}
+
+list_all_labs() {
+  find "$BASE_DIR" -maxdepth 1 -type d \( -name "Question-*" -o -name "Extra-Credit-*" \) | sort -V
 }
 
 run_cleanup() {
@@ -52,23 +68,31 @@ run_cleanup() {
 }
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: scripts/cleanup-question.sh <question-number|question-dir|all>"
+  echo "Usage: scripts/cleanup-question.sh <question-number|question-dir|extra-number|extra-dir|all|all-extra>"
   echo ""
   echo "Examples:"
   echo "  scripts/cleanup-question.sh 5"
   echo "  scripts/cleanup-question.sh Question-5-HPA"
+  echo "  scripts/cleanup-question.sh extra-1"
   echo "  scripts/cleanup-question.sh all"
+  echo "  scripts/cleanup-question.sh all-extra"
   exit 1
 fi
 
 INPUT="$*"
 
-if [[ "$INPUT" == "all" ]]; then
-  echo "Cleaning up all questions..."
-  for i in $(seq 1 17); do
-    QUESTION_DIR=$(resolve_question_dir "$i")
+if [[ "$INPUT" == "all" || "$INPUT" == "all-extra" ]]; then
+  if [[ "$INPUT" == "all-extra" ]]; then
+    echo "Cleaning up all extra credit labs..."
+    LABS=$(find "$BASE_DIR" -maxdepth 1 -type d -name "Extra-Credit-*" | sort -V)
+  else
+    echo "Cleaning up all questions and extra credit labs..."
+    LABS=$(list_all_labs)
+  fi
+
+  while read -r QUESTION_DIR; do
     [[ -n "$QUESTION_DIR" ]] && run_cleanup "$QUESTION_DIR" || true
-  done
+  done <<< "$LABS"
   echo ""
   echo "All cleanups complete."
 else

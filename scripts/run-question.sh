@@ -5,27 +5,53 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: scripts/run-question.sh <question-number|question-dir>" >&2
+  echo "Usage: scripts/run-question.sh <question-number|question-dir|extra-number|extra-dir>" >&2
   echo "Examples:" >&2
   echo "  scripts/run-question.sh 5" >&2
   echo "  scripts/run-question.sh Question-5-HPA" >&2
+  echo "  scripts/run-question.sh extra-1" >&2
+  echo "  scripts/run-question.sh Extra-Credit-1-Broken-API-Server" >&2
   exit 1
 fi
 
-# If input is just a number, find the matching Question-N- directory
-if [[ "$1" =~ ^[0-9]+$ ]]; then
-  QUESTION_DIR=$(find "$BASE_DIR" -maxdepth 1 -type d -name "Question-$1-*" | head -1)
-  if [[ -z "$QUESTION_DIR" ]]; then
-    echo "Error: Question directory for Question-$1 not found" >&2
-    exit 1
-  fi
-else
+resolve_question_dir() {
+  local input="$1"
+
   # Accept either an absolute path or a name relative to the repo root
-  if [[ -d "$BASE_DIR/$*" ]]; then
-    QUESTION_DIR="$BASE_DIR/$*"
-  else
-    QUESTION_DIR="$*"
+  if [[ -d "$BASE_DIR/$input" ]]; then
+    echo "$BASE_DIR/$input"
+    return 0
   fi
+
+  if [[ -d "$input" ]]; then
+    echo "$input"
+    return 0
+  fi
+
+  # Main question by number
+  if [[ "$input" =~ ^[0-9]+$ ]]; then
+    find "$BASE_DIR" -maxdepth 1 -type d -name "Question-${input}-*" | head -1
+    return 0
+  fi
+
+  # Extra credit by shorthand: extra-1, extra 1, ec1, ec-1
+  if [[ "$input" =~ ^([Ee][Xx][Tt][Rr][Aa]([[:space:]-]*[Cc][Rr][Ee][Dd][Ii][Tt])?|[Ee][Cc])[[:space:]-]*([0-9]+)$ ]]; then
+    find "$BASE_DIR" -maxdepth 1 -type d -name "Extra-Credit-${BASH_REMATCH[3]}-*" | head -1
+    return 0
+  fi
+
+  return 1
+}
+
+QUESTION_DIR=$(resolve_question_dir "$*") || QUESTION_DIR=""
+
+if [[ -z "$QUESTION_DIR" ]]; then
+  echo "Error: Could not find question directory for '$*'" >&2
+  echo "Available main questions and extra credit labs:" >&2
+  find "$BASE_DIR" -maxdepth 1 -type d \( -name "Question-*" -o -name "Extra-Credit-*" \) | sort -V | while read -r d; do
+    echo "  $(basename "$d")" >&2
+  done
+  exit 1
 fi
 
 if [[ ! -d "$QUESTION_DIR" ]]; then

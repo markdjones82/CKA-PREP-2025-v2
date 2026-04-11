@@ -10,6 +10,8 @@ Straightforward CKA practice labs derived from the CKA-PREP playlist. Every ques
 - `validate.bash` — automatic validation checks to confirm your solution is correct.
 - `cleanup.bash` — clean up and remove resources created during the question.
 
+The repo also includes `Extra-Credit-*` labs for harder troubleshooting and cluster-repair scenarios.
+
 ---
 
 ## How to Use
@@ -24,14 +26,26 @@ Straightforward CKA practice labs derived from the CKA-PREP playlist. Every ques
    ```bash
    scripts/run-question.sh 5
    ```
+   Or run an extra-credit lab:
+   ```bash
+   scripts/run-question.sh extra-1
+   ```
 4. Work through the task, then consult `SolutionNotes.bash` if you need help.
 5. Validate your solution:
    ```bash
    scripts/validate-question.sh 5
    ```
+   Or validate an extra-credit lab:
+   ```bash
+   scripts/validate-question.sh extra-1
+   ```
 6. Clean up resources when done:
    ```bash
    scripts/cleanup-question.sh 5
+   ```
+   Or clean up an extra-credit lab:
+   ```bash
+   scripts/cleanup-question.sh extra-1
    ```
 
 ---
@@ -47,14 +61,36 @@ scripts/validate-question.sh 5
 
 # By directory name
 scripts/validate-question.sh Question-5-HPA
+
+# Extra credit by shorthand
+scripts/validate-question.sh extra-1
+
+# Extra credit by directory name
+scripts/validate-question.sh Extra-Credit-1-Broken-API-Server
 ```
 
-### Validate all questions
+### Validate all labs
 ```bash
+# All main questions plus extra credit
 scripts/validate-question.sh all
+
+# Extra credit only
+scripts/validate-question.sh all-extra
 ```
 
 The script outputs `PASS` or `FAIL` for each check, with a final score summary. Exit code is `0` if all checks pass, non-zero otherwise.
+
+### Run and clean up extra-credit labs
+```bash
+# Run an extra-credit lab
+scripts/run-question.sh extra-2
+
+# Clean up one extra-credit lab
+scripts/cleanup-question.sh extra-2
+
+# Clean up all extra-credit labs
+scripts/cleanup-question.sh all-extra
+```
 
 ---
 
@@ -103,3 +139,12 @@ This opens VSCodium in the current directory, allowing you to browse and edit al
 | 16 | NodePort Service | — |
 | 17 | TLS Config | — |
 | 18 | kubectl patch — Resource Limits | — |
+
+## Available Extra Credit Labs
+
+| # | Topic |
+|---|-------|
+| 1 | Broken API Server |
+| 2 | Certificate Issues |
+| 3 | Kubelet Not Starting |
+| 4 | Pod Limits and Reservations |

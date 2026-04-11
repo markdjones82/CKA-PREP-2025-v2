@@ -39,8 +39,22 @@ resolve_question_dir() {
     fi
   fi
 
+  # Extra credit by shorthand: extra-1, extra 1, ec1, ec-1
+  if [[ "$input" =~ ^([Ee][Xx][Tt][Rr][Aa]([[:space:]-]*[Cc][Rr][Ee][Dd][Ii][Tt])?|[Ee][Cc])[[:space:]-]*([0-9]+)$ ]]; then
+    local extra_match
+    extra_match=$(find "$BASE_DIR" -maxdepth 1 -type d -name "Extra-Credit-${BASH_REMATCH[3]}-*" | head -1)
+    if [[ -n "$extra_match" ]]; then
+      echo "$extra_match"
+      return 0
+    fi
+  fi
+
   echo ""
   return 1
+}
+
+list_all_labs() {
+  find "$BASE_DIR" -maxdepth 1 -type d \( -name "Question-*" -o -name "Extra-Credit-*" \) | sort -V
 }
 
 # -- run validation for a single question ---------------------
@@ -67,12 +81,14 @@ run_validation() {
 
 # -- main -----------------------------------------------------
 if [[ $# -lt 1 ]]; then
-  echo "Usage: scripts/validate-question.sh <question-number|question-dir|all>"
+  echo "Usage: scripts/validate-question.sh <question-number|question-dir|extra-number|extra-dir|all|all-extra>"
   echo ""
   echo "Examples:"
   echo "  scripts/validate-question.sh 5                  # validate Question 5 (HPA)"
   echo "  scripts/validate-question.sh \"Question-5 HPA\"   # same, using directory name"
-  echo "  scripts/validate-question.sh all                # validate all questions"
+  echo "  scripts/validate-question.sh extra-1            # validate Extra Credit 1"
+  echo "  scripts/validate-question.sh all                # validate all questions and extra credit labs"
+  echo "  scripts/validate-question.sh all-extra          # validate only extra credit labs"
   exit 1
 fi
 
@@ -82,16 +98,23 @@ PASSED_QUESTIONS=0
 FAILED_QUESTIONS=0
 SKIPPED_QUESTIONS=0
 
-if [[ "$INPUT" == "all" ]]; then
+if [[ "$INPUT" == "all" || "$INPUT" == "all-extra" ]]; then
   echo -e "${CYAN}+==========================================================+${NC}"
-  echo -e "${CYAN}|        CKA Practice Questions - Full Validation        |${NC}"
+  if [[ "$INPUT" == "all-extra" ]]; then
+    echo -e "${CYAN}|      CKA Practice Extra Credit - Full Validation       |${NC}"
+  else
+    echo -e "${CYAN}|   CKA Practice Questions + Extra Credit Validation    |${NC}"
+  fi
   echo -e "${CYAN}+==========================================================+${NC}"
 
-  for i in $(seq 1 17); do
-    QUESTION_DIR=$(resolve_question_dir "$i")
-    if [[ -z "$QUESTION_DIR" ]]; then
-      continue
-    fi
+  if [[ "$INPUT" == "all-extra" ]]; then
+    LABS=$(find "$BASE_DIR" -maxdepth 1 -type d -name "Extra-Credit-*" | sort -V)
+  else
+    LABS=$(list_all_labs)
+  fi
+
+  while read -r QUESTION_DIR; do
+    [[ -z "$QUESTION_DIR" ]] && continue
 
     TOTAL_QUESTIONS=$((TOTAL_QUESTIONS + 1))
     run_validation "$QUESTION_DIR"
@@ -103,7 +126,7 @@ if [[ "$INPUT" == "all" ]]; then
     else
       FAILED_QUESTIONS=$((FAILED_QUESTIONS + 1))
     fi
-  done
+  done <<< "$LABS"
 
   echo ""
   echo -e "${CYAN}==========================================================${NC}"
@@ -122,8 +145,8 @@ else
   QUESTION_DIR=$(resolve_question_dir "$INPUT")
   if [[ -z "$QUESTION_DIR" ]]; then
     echo -e "${RED}Error: Could not find question directory for '$INPUT'${NC}" >&2
-    echo "Available questions:"
-    find "$BASE_DIR" -maxdepth 1 -type d -name "Question-*" | sort -V | while read -r d; do
+    echo "Available questions and extra credit labs:"
+    list_all_labs | while read -r d; do
       echo "  $(basename "$d")"
     done
     exit 1
