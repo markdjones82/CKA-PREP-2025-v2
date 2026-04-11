@@ -68,9 +68,6 @@ SOLUTION="$QUESTION_DIR/SolutionNotes.bash"
 
 chmod +x "$SETUP"
 
-echo "==> Running lab setup for $QUESTION_DIR"
-"$SETUP"
-
 echo
 echo "==> Question"
 cat "$QUESTION_TEXT"
@@ -79,3 +76,7 @@ echo
 if [[ -f "$SOLUTION" ]]; then
   echo "Hints: see $SOLUTION"
 fi
+
+echo
+echo "==> Running lab setup for $QUESTION_DIR"
+"$SETUP"
