@@ -14,4 +14,5 @@
 # - Review kubelet logs for container runtime connection issues
 # - Inspect the kubelet systemd drop-in to find which config files are sourced
 # - On kubeadm nodes, runtime args are set in /var/lib/kubelet/kubeadm-flags.env
+# - You can check a working node to see what the correct runtime endpoint should be
 # - You can SSH to nodes by name
