@@ -28,8 +28,8 @@ check "Kubelet service is active on node01" \
   bash -c 'ssh node01 "systemctl is-active kubelet"'
 
 # 2. Kubelet is not using bad socket on node01
-check "kubeadm-flags.env does not contain bad-socket.sock" \
-  bash -c '! ssh node01 "grep -q bad-socket.sock /var/lib/kubelet/kubeadm-flags.env 2>/dev/null"'
+check "kubeadm-flags.env does not contain the typo container.sock" \
+  bash -c '! ssh node01 "grep -q container-runtime-endpoint=unix:///run/containerd/container.sock /var/lib/kubelet/kubeadm-flags.env 2>/dev/null"'
 
 # 3. node01 is Ready
 check "node01 is in Ready state" \

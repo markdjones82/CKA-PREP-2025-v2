@@ -11,7 +11,8 @@ ssh "$BAD_NODE" "sudo cp /var/lib/kubelet/kubeadm-flags.env /root/kubeadm-flags.
 
 # Break the kubelet by appending a wrong container runtime endpoint into kubeadm-flags.env
 # sed appends the bad flag just before the closing quote of KUBELET_KUBEADM_ARGS
-ssh "$BAD_NODE" "sudo sed -i 's|\"$| --container-runtime-endpoint=unix:///run/containerd/bad-socket.sock\"|' /var/lib/kubelet/kubeadm-flags.env"
+# Simulate a realistic typo: 'container.sock' instead of 'containerd.sock'
+ssh "$BAD_NODE" "sudo sed -i 's|\"$| --container-runtime-endpoint=unix:///run/containerd/container.sock\"|' /var/lib/kubelet/kubeadm-flags.env"
 
 # Restart kubelet so it picks up the bad config
 ssh "$BAD_NODE" "sudo systemctl daemon-reload"

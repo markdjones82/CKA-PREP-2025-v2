@@ -1,7 +1,7 @@
 # Question: Kubelet Not Starting
-# A node is showing NotReady status.
-# The kubelet service has stopped and someone has modified the kubelet configuration
-# to point to the wrong container runtime socket.
+# A coworker was migrating node01 to a new container runtime and manually edited
+# the kubelet runtime configuration. They introduced a typo in the socket path
+# and the node is now showing NotReady with the kubelet failing to start.
 
 # Task:
 # 1. Identify why the node is NotReady

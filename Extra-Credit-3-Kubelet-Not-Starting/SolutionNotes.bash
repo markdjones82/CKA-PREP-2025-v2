@@ -22,14 +22,15 @@ systemctl cat kubelet
 
 # Then inspect the file:
 cat /var/lib/kubelet/kubeadm-flags.env
-# You will see --container-runtime-endpoint=unix:///run/containerd/bad-socket.sock appended
+# You will see a typo: --container-runtime-endpoint=unix:///run/containerd/container.sock
+# The correct path is: unix:///run/containerd/containerd.sock (note the missing 'd')
 
 # Step 5: Fix the container runtime endpoint
 # Remove the bad flag by restoring the correct runtime endpoint
 # Edit the file and remove the bad --container-runtime-endpoint entry, leaving the rest intact
 sudo vi /var/lib/kubelet/kubeadm-flags.env
 # Or use sed to remove just the bad flag:
-sudo sed -i 's| --container-runtime-endpoint=unix:///run/containerd/bad-socket.sock||g' /var/lib/kubelet/kubeadm-flags.env
+sudo sed -i 's| --container-runtime-endpoint=unix:///run/containerd/container.sock||g' /var/lib/kubelet/kubeadm-flags.env
 
 # Step 6: Restart kubelet
 sudo systemctl daemon-reload
