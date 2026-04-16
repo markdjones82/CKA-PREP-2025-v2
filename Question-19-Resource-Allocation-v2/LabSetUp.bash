@@ -36,6 +36,4 @@ spec:
 EOF
 
 echo "Lab setup complete."
-echo ""
-cat Questions.bash
 
