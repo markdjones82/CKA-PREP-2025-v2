@@ -2,7 +2,6 @@
 
 # SCENARIO:
 # A WordPress deployment in namespace 'relative-fawn' has 3 replicas.
-# There is also a monitoring-agent deployment running in the same namespace.
 
 # TASK:
 # Edit the WordPress deployment so that each pod's resource requests

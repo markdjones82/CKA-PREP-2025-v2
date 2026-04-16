@@ -16,22 +16,22 @@ kubectl describe node | grep -A10 'Allocated resources'
 echo "[*] Listing pod requests..."
 kubectl get pods -n relative-fawn -o custom-columns="NAME:.metadata.name,CPU_REQ:.spec.containers[*].resources.requests.cpu,MEM_REQ:.spec.containers[*].resources.requests.memory"
 # wordpress pods: 100m CPU, 100Mi memory each (too low!)
-# monitoring-agent: 200m CPU, 128Mi memory
 
 # Step 4: Calculate correct requests
 #
 # KEY FORMULA: (allocatable - overhead) / replicas
 #
+# Overhead = system pods (kube-proxy, coredns, etc.) — typically ~150m CPU / ~250Mi memory
+#
 # For this lab (1 CPU node):
-#   CPU:    (1000m - ~200m overhead) / 3 = 800m / 3 ≈ 266m per pod
-#   Memory: (1800Mi - ~250Mi overhead) / 3 = 1550Mi / 3 ≈ 516Mi per pod
+#   CPU:    (1000m - 150m) / 3 = 850m / 3 ≈ 266m per pod  → use 250m
+#   Memory: (1800Mi - 250Mi) / 3 = 1550Mi / 3 ≈ 516Mi per pod → use 500Mi
 #
 # For the exam (3 CPU node):
-#   CPU:    (3000m - 600m overhead) / 3 = 2400m / 3 = 800m per pod
+#   CPU:    (3000m - 600m) / 3 = 2400m / 3 = 800m per pod
 #   Memory: same formula with the exam node's memory
 #
-# "Overhead" includes system pods (kube-proxy, coredns, etc.) + monitoring-agent
-# You need to stay UNDER the total, so round down.
+# You need to stay UNDER the total, so always round down.
 
 # Step 5: Update WordPress requests (do NOT modify limits)
 echo "[*] Patching WordPress deployment with correct requests..."
@@ -52,20 +52,20 @@ kubectl rollout status deployment wordpress -n relative-fawn --timeout=120s
 
 echo "[*] Verifying all pods are running..."
 kubectl get pods -n relative-fawn
-# All 3 wordpress pods + monitoring-agent should be Running
+# All 3 wordpress pods should be Running
 
 echo "[*] Final resource check..."
 kubectl describe node | grep -A10 'Allocated resources'
-# Allocated CPU:    200m (agent) + 3×250m (wordpress) = 950m
-# Allocated Memory: 128Mi (agent) + 3×500Mi (wordpress) = 1628Mi
+# Allocated CPU:    ~150m (system) + 3×250m (wordpress) = 900m
+# Allocated Memory: ~250Mi (system) + 3×500Mi (wordpress) = 1750Mi
 
 # EXAM TIPS:
 # - The formula is key: (allocatable - overhead) / replicas
 # - Only REQUESTS matter for scheduling, not limits or actual usage
 # - Use kubectl describe node to find allocatable and current allocation
-# - Always account for system pods and other workloads (the "overhead")
+# - Overhead = system pods only (kube-proxy, coredns, etc.)
 # - On the exam with 3 CPUs: (3000 - 600) / 3 = 800m per pod
-# - On this lab with 1 CPU:  (1000 - 200) / 3 ≈ 266m → use 250m to be safe
+# - On this lab with 1 CPU:  (1000 - 150) / 3 ≈ 266m → use 250m to be safe
 
 echo "[OK] Solution complete!"
 

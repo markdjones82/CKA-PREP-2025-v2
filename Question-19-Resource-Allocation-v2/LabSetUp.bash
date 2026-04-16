@@ -1,11 +1,10 @@
 #!/bin/bash
-# LabSetUp.bash for Question 19 - Pod Scheduling / Resource Constraints
-# Recreates a CKA exam scenario: WordPress deployment where the 3rd replica
-# cannot schedule due to insufficient node CPU.
+# LabSetUp.bash for Question 19 - Resource Allocation v2
+# Scenario: WordPress deployment with requests set too low.
+# Task: properly divide node resources equally among the 3 replicas.
 #
 # Killercoda lab node: 1 CPU (1000m), ~1800Mi memory
-# Exam node was:       3 CPU (3000m), ~1800Mi memory
-# We scale proportionally: exam used 1000m per pod, we use 300m per pod.
+# System pods consume ~150m CPU / ~250Mi memory as overhead.
 
 set -uo pipefail
 
@@ -15,43 +14,7 @@ echo "[*] Setting up Question 19: Pod Scheduling - Resource Constraints"
 echo "[*] Creating namespace 'relative-fawn'..."
 kubectl create namespace relative-fawn --dry-run=client -o yaml | kubectl apply -f -
 
-# Step 2: Deploy a "resource-consumer" workload to simulate other cluster workloads.
-# This ensures there isn't enough room for WordPress replica #3.
-# On the exam, system/other pods consumed part of the 3 CPU budget.
-echo "[*] Deploying background workload (resource-consumer)..."
-cat <<'EOF' | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: monitoring-agent
-  namespace: relative-fawn
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: monitoring-agent
-  template:
-    metadata:
-      labels:
-        app: monitoring-agent
-    spec:
-      containers:
-      - name: agent
-        image: busybox:latest
-        command: ["sh", "-c", "while true; do sleep 30; done"]
-        resources:
-          requests:
-            cpu: "200m"
-            memory: "128Mi"
-          limits:
-            cpu: "200m"
-            memory: "128Mi"
-EOF
-
-echo "[*] Waiting for monitoring-agent to be ready..."
-kubectl rollout status deployment monitoring-agent -n relative-fawn --timeout=60s 2>/dev/null || true
-
-# Step 3: Deploy WordPress with 3 replicas.
+# Step 2: Deploy WordPress with 3 replicas.
 # Requests are intentionally set LOW (100m/100Mi) — all pods will schedule,
 # but the requests don't properly divide the node's resources among the replicas.
 echo "[*] Deploying WordPress with 3 replicas..."
