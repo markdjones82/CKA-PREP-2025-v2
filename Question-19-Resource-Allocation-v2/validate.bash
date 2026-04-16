@@ -75,6 +75,24 @@ check "WordPress CPU limit unchanged (still 300m)" \
     [[ ${VAL:-0} -eq 300 ]]
   '
 
+# 10. All 3 pods have equal CPU requests (all match the deployment template)
+check "All 3 pods have equal CPU requests" \
+  bash -c '
+    CPUS=$(kubectl get pods -n relative-fawn -l app=wordpress -o jsonpath="{.items[*].spec.containers[0].resources.requests.cpu}" 2>/dev/null)
+    UNIQUE=$(echo $CPUS | tr " " "\n" | sort -u | wc -l)
+    COUNT=$(echo $CPUS | tr " " "\n" | wc -l)
+    [[ $COUNT -eq 3 && $UNIQUE -eq 1 ]]
+  '
+
+# 11. All 3 pods have equal memory requests
+check "All 3 pods have equal memory requests" \
+  bash -c '
+    MEMS=$(kubectl get pods -n relative-fawn -l app=wordpress -o jsonpath="{.items[*].spec.containers[0].resources.requests.memory}" 2>/dev/null)
+    UNIQUE=$(echo $MEMS | tr " " "\n" | sort -u | wc -l)
+    COUNT=$(echo $MEMS | tr " " "\n" | wc -l)
+    [[ $COUNT -eq 3 && $UNIQUE -eq 1 ]]
+  '
+
 echo ""
 echo "==========================================="
 echo " Summary"
