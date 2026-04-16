@@ -26,8 +26,8 @@ kubectl get pods -n relative-fawn -o custom-columns="NAME:.metadata.name,CPU_REQ
 # For this lab (1 CPU node):
 #   CPU:    (1000m - 150m) / 3 = 850m / 3 ≈ 266m per pod  → use 250m
 #   Memory: (1800Mi - 250Mi) / 3 = 1550Mi / 3 ≈ 516Mi per pod
-#           BUT the deployment limit is 300Mi, so requests cannot exceed 300Mi
-#           → use 250Mi (stays under the 300Mi limit)
+#           BUT the deployment limit is 500Mi, so requests cannot exceed 500Mi
+#           → use 300Mi (stays under the 500Mi limit)
 #
 # For the exam (3 CPU node):
 #   CPU:    (3000m - 600m) / 3 = 2400m / 3 = 800m per pod
@@ -41,14 +41,14 @@ kubectl get pods -n relative-fawn -o custom-columns="NAME:.metadata.name,CPU_REQ
 echo "[*] Patching WordPress deployment with correct requests..."
 kubectl -n relative-fawn set resources deployment/wordpress \
   --containers=wordpress \
-  --requests=cpu=250m,memory=250Mi
+  --requests=cpu=250m,memory=300Mi
 
 # Alternative: kubectl edit deployment wordpress -n relative-fawn
 # Change only the requests section:
 #   requests:
 #     cpu: "250m"
-#     memory: "250Mi"
-# Leave limits as-is (300m CPU, 300Mi memory)
+#     memory: "300Mi"
+# Leave limits as-is (300m CPU, 500Mi memory)
 
 # Step 6: Wait for rollout and verify
 echo "[*] Waiting for rollout..."
@@ -61,7 +61,7 @@ kubectl get pods -n relative-fawn
 echo "[*] Final resource check..."
 kubectl describe node | grep -A10 'Allocated resources'
 # Allocated CPU:    ~150m (system) + 3×250m (wordpress) = 900m
-# Allocated Memory: ~250Mi (system) + 3×250Mi (wordpress) = 1000Mi
+# Allocated Memory: ~250Mi (system) + 3×300Mi (wordpress) = 1150Mi
 
 # EXAM TIPS:
 # - The formula is key: (allocatable - overhead) / replicas

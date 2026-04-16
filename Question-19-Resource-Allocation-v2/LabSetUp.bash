@@ -32,7 +32,7 @@ spec:
             memory: "100Mi"
           limits:
             cpu: "300m"
-            memory: "300Mi"
+            memory: "500Mi"
 EOF
 
 echo "Lab setup complete."

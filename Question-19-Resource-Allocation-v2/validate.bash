@@ -67,12 +67,12 @@ check "WordPress memory request was increased (greater than 100Mi)" \
     [[ ${VAL:-0} -gt 100 ]]
   '
 
-# 9. Limits were NOT modified (still 300m CPU)
-check "WordPress CPU limit unchanged (still 300m)" \
+# 9. Limits were NOT modified (memory still 500Mi)
+check "WordPress memory limit unchanged (still 500Mi)" \
   bash -c '
-    LIM=$(kubectl get deployment wordpress -n relative-fawn -o jsonpath="{.spec.template.spec.containers[0].resources.limits.cpu}" 2>/dev/null)
-    VAL=${LIM%m}
-    [[ ${VAL:-0} -eq 300 ]]
+    LIM=$(kubectl get deployment wordpress -n relative-fawn -o jsonpath="{.spec.template.spec.containers[0].resources.limits.memory}" 2>/dev/null)
+    VAL=${LIM%Mi}
+    [[ ${VAL:-0} -eq 500 ]]
   '
 
 # 10. All 3 pods have equal CPU requests (all match the deployment template)
