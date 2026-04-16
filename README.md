@@ -105,3 +105,4 @@ This opens VSCodium in the current directory, allowing you to browse and edit al
 | 16 | NodePort Service | — |
 | 17 | TLS Config | — |
 | 18 | kubectl patch — Resource Limits | — |
+| 19 | Resource Allocation v2 — Pod Scheduling | — |
