@@ -11,3 +11,6 @@
 # After making the changes scale the deployment back to 3 replicas
 
 #Video link - https://youtu.be/ZqGDdETii8c
+
+#Documentation Reference
+# Concepts -> Configuration -> Resource Management for Pods and Containers

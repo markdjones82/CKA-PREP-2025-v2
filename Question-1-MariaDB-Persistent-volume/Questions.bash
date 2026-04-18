@@ -13,3 +13,6 @@
 # Ensure the MariaDB Deployment is running and Stable
 
 #Video Link - https://youtu.be/aXvvc1EB1zg
+
+#Documentation Reference
+# Concepts -> Storage -> Persistent Volumes

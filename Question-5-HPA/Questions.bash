@@ -8,3 +8,7 @@
 # 4. Set the downscale stabilization window to 30 seconds
 
 # Video Link - https://youtu.be/YGkARVFKtmM
+
+#Documentation Reference
+# (hpa) Tasks -> Run Application -> HorizontalPodAutoscaling Walkthrough
+# (downscale) Concepts -> Workloads -> Horizontal Pod Autoscaling
