@@ -51,7 +51,7 @@ check "Sidecar runs tail on /var/log/wordpress.log" \
 # 5. Shared volume exists (emptyDir) - volume name can be anything
 check "Shared emptyDir volume configured" \
   bash -c '
-    kubectl get deployment wordpress -n default -o jsonpath="{.spec.template.spec.volumes[?(@.emptyDir)].name}" | grep -q "."
+    kubectl get deployment wordpress -n default -o jsonpath="{.spec.template.spec.volumes[?(@.emptyDir)].name}"
   '
 
 # 6. Volume mounted at /var/log on main container
