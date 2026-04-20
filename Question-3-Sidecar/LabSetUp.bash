@@ -4,11 +4,12 @@ set -e
 echo "Setting up WordPress deployment for sidecar lab in the default namespace..."
 
 # 1. Create WordPress deployment without log volume
-cat <<EOF | kubectl apply -f -
+cat <<EOF | kubectl apply -n default -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wordpress
+  namespace: default
   labels:
     app: wordpress
 spec:
@@ -30,11 +31,12 @@ spec:
 EOF
 
 # 2. Create a service to expose the deployment
-cat <<EOF | kubectl apply -f -
+cat <<EOF | kubectl apply -n default -f -
 apiVersion: v1
 kind: Service
 metadata:
   name: wordpress
+  namespace: default
 spec:
   selector:
     app: wordpress
