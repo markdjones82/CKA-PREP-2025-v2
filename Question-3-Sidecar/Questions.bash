@@ -10,4 +10,6 @@
 #Video link - https://youtu.be/3xraEGGQJDY
 
 #Documentation Reference
+# Tip: Navigate the documentation manually to build familiarity with its structure
 # Concepts -> Workloads -> pod -> Sidecar Containers
+# https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/

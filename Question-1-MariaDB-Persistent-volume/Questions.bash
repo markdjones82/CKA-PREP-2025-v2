@@ -15,4 +15,6 @@
 #Video Link - https://youtu.be/aXvvc1EB1zg
 
 #Documentation Reference
+# Tip: Navigate the documentation manually to build familiarity with its structure
 # Concepts -> Storage -> Persistent Volumes
+# https://kubernetes.io/docs/concepts/storage/persistent-volumes/
