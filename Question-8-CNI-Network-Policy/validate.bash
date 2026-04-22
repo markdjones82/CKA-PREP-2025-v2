@@ -23,10 +23,10 @@ echo "============================================"
 echo " Validating Question 8: CNI & Network Policy"
 echo "============================================"
 
-# 1. A CNI is installed (check for calico or flannel pods)
-check "CNI plugin is installed (calico or flannel pods running)" \
+# 1. A CNI is installed (check for calico pods)
+check "CNI plugin is installed (calico pods running)" \
   bash -c '
-    kubectl get pods -A --no-headers 2>/dev/null | grep -qiE "calico|flannel|tigera"
+    kubectl get pods -A --no-headers 2>/dev/null | grep -qiE "calico|tigera"
   '
 
 # 2. All nodes are Ready (CNI is working)
@@ -42,17 +42,17 @@ check "CoreDNS pods are Running (pod networking functional)" \
     kubectl get pods -n kube-system --no-headers 2>/dev/null | grep coredns | grep -q Running
   '
 
-# 4. CNI supports NetworkPolicy (check if Calico is installed, or if flannel warn)
-check "CNI supports NetworkPolicy (Calico/Cilium detected)" \
+# 4. CNI supports NetworkPolicy (Calico/Tigera detected)
+check "CNI supports NetworkPolicy (Calico/Tigera detected)" \
   bash -c '
-    # Calico or Cilium support NetworkPolicy; Flannel does not natively
-    kubectl get pods -A --no-headers 2>/dev/null | grep -qiE "calico|tigera|cilium"
+    # Calico supports NetworkPolicy; Flannel does not natively
+    kubectl get pods -A --no-headers 2>/dev/null | grep -qiE "calico|tigera"
   '
 
-# 5. CNI was installed from manifest (tigera-operator or kube-flannel namespace exists)
-check "CNI installed from manifest (tigera-operator or kube-flannel namespace)" \
+# 5. CNI was installed from manifest (tigera-operator or calico namespace exists)
+check "CNI installed from manifest (tigera-operator or calico namespace)" \
   bash -c '
-    kubectl get ns --no-headers 2>/dev/null | grep -qiE "tigera|kube-flannel|calico|cilium"
+    kubectl get ns --no-headers 2>/dev/null | grep -qiE "tigera|calico"
   '
 
 echo ""
