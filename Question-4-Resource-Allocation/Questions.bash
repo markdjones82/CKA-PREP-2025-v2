@@ -11,3 +11,8 @@
 # After making the changes scale the deployment back to 3 replicas
 
 #Video link - https://youtu.be/ZqGDdETii8c
+
+#Documentation Reference
+# Tip: Navigate the documentation manually to build familiarity with its structure
+# Concepts -> Configuration -> Resource Management for Pods and Containers
+# https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/

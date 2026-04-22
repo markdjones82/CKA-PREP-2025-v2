@@ -10,3 +10,10 @@
 # high-priority class
 
 # Video Link - https://youtu.be/CZzxGyF6OHc
+
+#Documentation Reference
+# Tip: Navigate the documentation manually to build familiarity with its structure
+# (yaml) Reference -> Command line tool (kubectl) -> kubectl reference -> kubectle create -> kubectl create priorityClass
+# https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_priorityclass/
+# (patch by A-Elfiiky) Tasks -> Manage Kubernetes Objects -> Update API Objects in place using Kubectl patch
+# https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/
