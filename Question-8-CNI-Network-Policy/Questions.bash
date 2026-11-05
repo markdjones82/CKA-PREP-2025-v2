@@ -1,5 +1,5 @@
 # Question
-# Install and configure a CNI of your choice tht meets the specified requirements,
+# Install and configure a CNI of your choice that meets the specified requirements,
 # Choose one of the following:
 
 # Flannel (v0.26.1) using the manifest kube-flannel.yml
