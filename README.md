@@ -16,6 +16,18 @@ Straightforward CKA practice labs derived from the CKA-PREP playlist. Every ques
 
 ## How to Use
 
+### Quick start (one command)
+
+Paste this into the Killercoda terminal to clone the repo and set up a question in one go (replace `15` with the question number):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/markdjones82/CKA-PREP-2025-v2/custom-main/scripts/setup_question.sh | bash -s -- 15
+```
+
+`scripts/setup_question.sh` clones the repo into `~/CKA-PREP-2025-v2` (or reuses an existing clone) and runs the question's `LabSetUp.bash` for you. From inside a clone you can also run it directly: `./scripts/setup_question.sh 15`.
+
+### Step by step
+
 1. Launch the [Killercoda CKA playground]([https://killercoda.com/cka](https://killercoda.com/playgrounds/scenario/cka) or your own cluster.
 2. Clone this repo inside the environment:
    ```bash
