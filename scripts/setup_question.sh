@@ -22,7 +22,7 @@ if [[ -z "$Q" ]]; then
 fi
 
 # If this script is running from inside a repo checkout, use it directly.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)" || SCRIPT_DIR=""
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-}")" 2>/dev/null && pwd)" || SCRIPT_DIR=""
 if [[ -n "$SCRIPT_DIR" && -f "$SCRIPT_DIR/scripts/run-question.sh" ]]; then
   REPO_DIR="$SCRIPT_DIR"
 elif [[ -n "$SCRIPT_DIR" && -f "$SCRIPT_DIR/run-question.sh" ]]; then
